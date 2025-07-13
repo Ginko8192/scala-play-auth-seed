@@ -1,15 +1,12 @@
 package controllers
 
-import authentication.models.LoginRequest
 import org.apache.pekko.stream.Materializer
 import org.scalatestplus.play.*
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{OK, UNAUTHORIZED}
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Json
 import play.api.test.*
-import play.api.test.Helpers.{POST, call, contentAsString, defaultAwaitTimeout, status}
-
-import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import play.api.test.Helpers.{POST, call, contentAsString, defaultAwaitTimeout, status, writeableOf_AnyContentAsEmpty}
 
 
 class AuthControllerTest extends PlaySpec with GuiceOneAppPerSuite with Injecting {
@@ -20,7 +17,8 @@ class AuthControllerTest extends PlaySpec with GuiceOneAppPerSuite with Injectin
   "AuthController POST" should {
     "return JWT token for valid credentials" in {
       val controller = app.injector.instanceOf[AuthController]
-      val jsonBody = Json.obj("email" -> "gmail@gmail.com", "password" -> "password")
+      
+      val jsonBody = Json.obj("email" -> "example@example.com", "password" -> "password")
 
       val request = FakeRequest(POST, "/login")
         .withHeaders("Content-Type" -> "application/json")
@@ -40,7 +38,7 @@ class AuthControllerTest extends PlaySpec with GuiceOneAppPerSuite with Injectin
     "Calling reserved endpoint with JWT returns OK" in {
       val controller = app.injector.instanceOf[AuthController]
 
-      val jsonBody = Json.obj("email" -> "gmail@gmail.com", "password" -> "password")
+      val jsonBody = Json.obj("email" -> "example@example.com", "password" -> "password")
 
       val request = FakeRequest(POST, "/login")
         .withHeaders("Content-Type" -> "application/json")

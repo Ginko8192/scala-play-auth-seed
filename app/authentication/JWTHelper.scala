@@ -1,4 +1,4 @@
-package helper
+package authentication
 
 import pdi.jwt.{JwtAlgorithm, JwtJson}
 import play.api.libs.json.Json

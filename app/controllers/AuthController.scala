@@ -1,24 +1,27 @@
 package controllers
 
+import authentication.AuthService
 import authentication.models.LoginRequest
 import authentication.models.LoginRequest.given
 import controllers.actions.AuthenticatedAction
-import helper.JWTHelper
-import inventory.RepositoryFactory
+import inventory.UserRepository
 import play.api.*
 import play.api.libs.json.Json
 import play.api.mvc.*
 
 import javax.inject.*
-import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Singleton
-class AuthController @Inject()(val controllerComponents: ControllerComponents, repositoryFactory: RepositoryFactory, authenticatedAction: AuthenticatedAction) extends BaseController {
+class AuthController @Inject()(
+                                val controllerComponents: ControllerComponents,
+                                userRepository: UserRepository,
+                                authenticatedAction: AuthenticatedAction,
+                                authService: AuthService
+                              )(implicit ec: ExecutionContext) extends BaseController {
 
-  def index() = authenticatedAction { implicit request: Request[AnyContent] =>
-    val userRepository = repositoryFactory.provideUserRepository
-
+  def index(): Action[AnyContent] = authenticatedAction { implicit request: Request[AnyContent] =>
     val userVector = Await.result(
       userRepository.getById(1) , 10.seconds
     )
@@ -26,11 +29,12 @@ class AuthController @Inject()(val controllerComponents: ControllerComponents, r
     Ok(Json.toJson(userVector)).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*") //TODO: for testing, probably isn't a great idea to keep it in production
   }
 
-  def processLogin(): Action[LoginRequest] = Action(parse.json[LoginRequest]) { implicit request =>
+  def processLogin(): Action[LoginRequest] = Action.async(parse.json[LoginRequest]) { implicit request:Request[LoginRequest] =>
     val loginRequest = request.body
     println("loginRequest:" + loginRequest)
-    if (loginRequest.email == "gmail@gmail.com" && loginRequest.password == "password") //TODO: replace with real logic
-      Ok(JWTHelper.createToken("1"))
-    else Unauthorized
+    authService.checkCredentialsAndReturnJWT(loginRequest).map {
+      case Some(jwt) => Ok(jwt)
+      case None => Unauthorized
+    } 
   }
 }

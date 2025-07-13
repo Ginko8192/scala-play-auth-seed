@@ -1,9 +1,9 @@
 package controllers.actions
 
+import authentication.JWTHelper
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Inject
-import helper.JWTHelper
 
 class AuthenticatedAction @Inject()(val parser: BodyParsers.Default)(implicit val executionContext: ExecutionContext)
   extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionRefiner[Request, AuthenticatedRequest] {
