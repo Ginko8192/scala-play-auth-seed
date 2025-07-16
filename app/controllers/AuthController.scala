@@ -1,7 +1,7 @@
 package controllers
 
 import authentication.AuthService
-import authentication.models.LoginRequest
+import authentication.models.{LoginRequest, RegistrationRequest}
 import authentication.models.LoginRequest.given
 import controllers.actions.AuthenticatedAction
 import inventory.UserRepository
@@ -36,5 +36,14 @@ class AuthController @Inject()(
       case Some(jwt) => Ok(jwt)
       case None => Unauthorized
     } 
+  }
+
+  def processRegistration(): Action[RegistrationRequest] = Action.async(parse.json[RegistrationRequest]) { implicit request: Request[RegistrationRequest] =>
+    val registrationRequest = request.body
+
+    authService.checkCredentialsAndReturnJWT(LoginRequest(registrationRequest.email, registrationRequest.password)).map {
+      case Some(jwt) => Ok(jwt)
+      case None => Unauthorized
+    }
   }
 }

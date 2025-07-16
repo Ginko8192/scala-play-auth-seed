@@ -1,7 +1,7 @@
 package modules
 
 import com.google.inject.{AbstractModule, Provides}
-import inventory.UserRepository
+import inventory.{TestRepository, UserRepository}
 import org.apache.pekko.stream.Materializer
 import play.api.Configuration
 import slick.jdbc.PostgresProfile.api.*
@@ -16,5 +16,12 @@ class RepositoryModule extends AbstractModule {
   def provideUserRepository(config: Configuration)(implicit mat: Materializer, ec: ExecutionContext): UserRepository = {
     val db = Database.forConfig("slick.dbs.default.db")
     new UserRepository(db)
+  }
+
+  @Provides
+  @Singleton
+  def provideTestRepository(config: Configuration)(implicit mat: Materializer, ec: ExecutionContext): TestRepository = {
+    val db = Database.forConfig("slick.dbs.default.db")
+    new TestRepository(db)
   }
 }

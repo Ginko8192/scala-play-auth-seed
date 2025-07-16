@@ -11,3 +11,4 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Authentication
 POST    /login                      controllers.AuthController.processLogin()
+POST    /registration               controllers.AuthController.processRegistration()

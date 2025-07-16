@@ -8,7 +8,7 @@ import user.model.{CreateUserRequest, UserEntity}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserRepository @Inject()(db: Database)(implicit ec: ExecutionContext) extends AbstractRepository {
+class UserRepository @Inject()(db: Database)(implicit ec: ExecutionContext) extends AbstractUserRepository:
   private val logger = Logger(this.getClass)
 
   def getById(id: Long): Future[Vector[UserEntity]] =
@@ -63,7 +63,7 @@ class UserRepository @Inject()(db: Database)(implicit ec: ExecutionContext) exte
 
     db.run(query)
 
-  def saveUser(user: CreateUserRequest): Future[Int] = {
+  def save(user: CreateUserRequest): Future[Int] = 
     val query =
       sqlu"""
       INSERT INTO public."users" (
@@ -90,6 +90,3 @@ class UserRepository @Inject()(db: Database)(implicit ec: ExecutionContext) exte
 
     println(query.getDumpInfo)
     db.run(query)
-  }
-}
-

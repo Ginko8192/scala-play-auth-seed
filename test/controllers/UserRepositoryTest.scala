@@ -1,6 +1,6 @@
 package controllers
 
-import inventory.UserRepository
+import inventory.{TestRepository, UserRepository}
 import org.apache.pekko.stream.Materializer
 import org.scalatestplus.play.*
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -15,30 +15,39 @@ class UserRepositoryTest extends PlaySpec with GuiceOneAppPerSuite with Injectin
   // Required implicits
   given Materializer = app.materializer
 
+  val userRepository: UserRepository = app.injector.instanceOf[UserRepository]
+  val testRepository: TestRepository = app.injector.instanceOf[TestRepository]
+
   "Repository test" should {
+    "Can save user" in {
+      cleanDb()
+
+      println(saveExampleUser)
+    }
+
     "Can get user by email" in {
-      val userRepository = app.injector.instanceOf[UserRepository]
+      cleanDb()
+      saveExampleUser
 
       val users = Await.result(userRepository.getByEmail("example@example.com"), 10.seconds)
 
       println(users.head)
     }
-    "Can save user" in {
-      val userRepository = app.injector.instanceOf[UserRepository]
 
+    def saveExampleUser: Int =
       val createUserRequest: CreateUserRequest = CreateUserRequest(
         google_id = None,
-        email = "example2@example.com",
-        username = "anUsername",
+        email = "example@example.com",
+        username = "username",
         hashed_password = "xxx",
         first_name = "FirstName",
         last_name = "LastName",
         bio = "example-bio"
       )
 
-      val users = Await.result(userRepository.saveUser(createUserRequest), 10.seconds)
+      Await.result(userRepository.save(createUserRequest), 10.seconds)
 
-      println(users)
-    }
+    def cleanDb() =
+      testRepository.cleanTestDB
   }
 }
