@@ -41,9 +41,9 @@ class AuthController @Inject()(
   def processRegistration(): Action[RegistrationRequest] = Action.async(parse.json[RegistrationRequest]) { implicit request: Request[RegistrationRequest] =>
     val registrationRequest = request.body
 
-    authService.checkCredentialsAndReturnJWT(LoginRequest(registrationRequest.email, registrationRequest.password)).map {
+    authService.registerUserAndReturnJWT(registrationRequest).map {
       case Some(jwt) => Ok(jwt)
-      case None => Unauthorized
+      case None => BadRequest
     }
   }
 }

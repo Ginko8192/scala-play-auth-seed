@@ -63,6 +63,33 @@ class UserRepository @Inject()(db: Database)(implicit ec: ExecutionContext) exte
 
     db.run(query)
 
+  def getByUsername(username: String): Future[Vector[UserEntity]] =
+    val query =
+      sql"""
+          SELECT
+          user_id,
+          google_id,
+          is_google_account,
+          email,
+          username,
+          password_hash,
+          first_name,
+          last_name,
+          profile_picture_storage_id,
+          bio,
+          created_at,
+          last_login,
+          email_verified,
+          is_admin,
+          credit_balance
+  
+          FROM public.users
+          WHERE username = $username
+          ;
+          """.as[UserEntity](using summon[GetResult[UserEntity]])
+
+    db.run(query)
+  
   def save(user: CreateUserRequest): Future[Int] = 
     val query =
       sqlu"""
