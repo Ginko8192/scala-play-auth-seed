@@ -22,16 +22,19 @@ class UserRepositoryTest extends PlaySpec with GuiceOneAppPerSuite with Injectin
     "Can save user" in {
       cleanDb()
 
-      println(saveExampleUser)
+      saveExampleUser mustBe 1
     }
 
     "Can get user by email" in {
       cleanDb()
-      saveExampleUser
+
+      saveExampleUser mustBe 1
 
       val users = Await.result(userRepository.getByEmail("example@example.com"), 10.seconds)
 
       println(users.head)
+
+      users.head.email mustBe "example@example.com"
     }
 
     def saveExampleUser: Int =
