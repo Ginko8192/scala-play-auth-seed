@@ -28,12 +28,11 @@ class AuthService @Inject()(userRepository: UserRepository)(implicit ec: Executi
       val userToSave = CreateUserRequest(
         email = registrationRequest.email,
         username = registrationRequest.username,
-        hashed_password = registrationRequest.password,
+        hashed_password = hashPassword(registrationRequest.password),
         first_name = registrationRequest.firstName,
         last_name = registrationRequest.lastName,
         bio = ""
       )
-
       userRepository.save(userToSave).map(_ == 1)
     
     // first we check if we have in the db a user with the same email 

@@ -115,5 +115,4 @@ class UserRepository @Inject()(db: Database)(implicit ec: ExecutionContext) exte
        CURRENT_TIMESTAMP);
       """
 
-    println(query.getDumpInfo)
     db.run(query)

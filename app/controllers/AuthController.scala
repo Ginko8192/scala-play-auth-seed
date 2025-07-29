@@ -1,8 +1,8 @@
 package controllers
 
 import authentication.AuthService
-import authentication.models.{LoginRequest, RegistrationRequest}
 import authentication.models.LoginRequest.given
+import authentication.models.{LoginRequest, RegistrationRequest}
 import controllers.actions.AuthenticatedAction
 import inventory.UserRepository
 import play.api.*
@@ -11,7 +11,7 @@ import play.api.mvc.*
 
 import javax.inject.*
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext}
 
 @Singleton
 class AuthController @Inject()(
@@ -32,18 +32,16 @@ class AuthController @Inject()(
   def processLogin(): Action[LoginRequest] = Action.async(parse.json[LoginRequest]) { implicit request:Request[LoginRequest] =>
     val loginRequest = request.body
     println("loginRequest:" + loginRequest)
-    authService.checkCredentialsAndReturnJWT(loginRequest).map {
-      case Some(jwt) => Ok(jwt)
-      case None => Unauthorized
-    } 
+    authService.checkCredentialsAndReturnJWT(loginRequest).map { (x: Option[String]) =>
+      x.map(jwt => Ok(jwt)).getOrElse(Unauthorized)
+    }
   }
 
   def processRegistration(): Action[RegistrationRequest] = Action.async(parse.json[RegistrationRequest]) { implicit request: Request[RegistrationRequest] =>
     val registrationRequest = request.body
 
-    authService.registerUserAndReturnJWT(registrationRequest).map {
-      case Some(jwt) => Ok(jwt)
-      case None => BadRequest
+    authService.registerUserAndReturnJWT(registrationRequest).map { (x: Option[String]) =>
+      x.map(jwt => Ok(jwt)).getOrElse(BadRequest)
     }
   }
 }

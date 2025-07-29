@@ -13,7 +13,7 @@ import scala.concurrent.duration.DurationInt
 class HomeController @Inject()(val controllerComponents: ControllerComponents, userRepository: UserRepository) extends BaseController {
   
   def index() = Action { implicit request: Request[AnyContent] =>
-
+    // this is just a test controller
     val userVector = Await.result(
       userRepository.getById(1) , 10.seconds
     )
