@@ -12,7 +12,7 @@ object JWTHelper:
     JwtJson.encode(claim, secretKey, algorithm)
   }
 
-  def validateToken(token: String): Option[String] = {
+  def validateTokenAndReturnUserId(token: String): Option[String] = {
     JwtJson.decodeJson(token, secretKey, Seq(algorithm)).toOption.flatMap { claim =>
       (claim \ "user_id").asOpt[String]
     }
